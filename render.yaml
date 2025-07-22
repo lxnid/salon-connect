@@ -21,17 +21,6 @@ services:
       - key: PORT
         value: 10000
 
-  # Frontend (Static Site)
-  - type: static
-    name: salon-connect-web
-    buildCommand: npm install && npm run build --workspace=apps/web
-    publishPath: ./apps/web/out
-    envVars:
-      - key: NEXT_PUBLIC_API_URL
-        value: https://salon-connect-api.onrender.com/api
-      - key: NODE_ENV
-        value: production
-
 databases:
   - name: salon-connect-db
     databaseName: salon_connect

@@ -24,18 +24,23 @@ This guide covers how to deploy SalonConnect to Render's free tier for zero-cost
 
 ### 2. Deploy to Render
 
-#### Option A: Using render.yaml (Recommended)
+#### Option A: Using render.yaml for API + Manual Frontend (Recommended)
 
-1. **Connect GitHub to Render**:
+1. **Deploy API and Database with Blueprint**:
    - Go to [Render Dashboard](https://dashboard.render.com)
    - Click "New" → "Blueprint"
    - Connect your GitHub repository
+   - **Blueprint Name**: `SalonConnect Platform`
    - Select the repository with your SalonConnect code
 
-2. **Render will automatically detect the `render.yaml` file** and create:
+2. **Render will automatically create**:
    - PostgreSQL database (free tier)
    - Web service for the API (free tier)
-   - Static site for the frontend (free tier)
+
+3. **Manually create the frontend static site**:
+   - After blueprint deploys, click "New" → "Static Site"
+   - Connect the same GitHub repository
+   - Configure as shown in Option B below
 
 #### Option B: Manual Setup
 
