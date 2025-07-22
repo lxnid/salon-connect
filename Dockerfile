@@ -7,13 +7,15 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY package.json package-lock.json* ./
 COPY apps/web/package.json ./apps/web/
 COPY apps/api/package.json ./apps/api/
-COPY packages/*/package.json ./packages/*/
+COPY packages/database/package.json ./packages/database/
+COPY packages/types/package.json ./packages/types/
+COPY packages/ui/package.json ./packages/ui/
 
 # Install dependencies
-RUN npm ci
+RUN npm install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder

@@ -5,10 +5,10 @@ services:
   # API Server
   - type: web
     name: salon-connect-api
-    env: docker
+    env: node
     plan: free
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    buildCommand: npm install && npx prisma generate --schema=./packages/database/prisma/schema.prisma && npm run build --workspace=apps/api
+    startCommand: npm start --workspace=apps/api
     envVars:
       - key: DATABASE_URL
         fromDatabase:
