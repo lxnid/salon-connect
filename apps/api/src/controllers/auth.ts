@@ -57,7 +57,13 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
     const token = generateToken(user)
 
     const response: AuthResponse = {
-      user,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName: user.firstName || undefined,
+        lastName: user.lastName || undefined
+      },
       token
     }
 
@@ -112,8 +118,8 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
         id: user.id,
         email: user.email,
         role: user.role,
-        firstName: user.firstName,
-        lastName: user.lastName
+        firstName: user.firstName || undefined,
+        lastName: user.lastName || undefined
       },
       token
     }

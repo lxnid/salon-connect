@@ -8,7 +8,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const database_1 = require("@salon-connect/database");
 const authenticate = async (req, res, next) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const token = req.get('Authorization')?.replace('Bearer ', '');
         if (!token) {
             return res.status(401).json({ error: 'Access token required' });
         }
