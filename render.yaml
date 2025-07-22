@@ -1,20 +1,7 @@
-# Render deployment configuration
-services:
-  # Database (PostgreSQL)
-  - type: pserv
-    name: salon-connect-db
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile.db
-    dockerContext: .
-    envVars:
-      - key: POSTGRES_USER
-        value: salon_user
-      - key: POSTGRES_PASSWORD
-        generateValue: true
-      - key: POSTGRES_DB
-        value: salon_connect
+# Render Blueprint: SalonConnect Platform
+# Beauty and salon booking platform with social features
 
+services:
   # API Server
   - type: web
     name: salon-connect-api
@@ -22,8 +9,6 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    buildCommand: npm run build
-    startCommand: npm start
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -37,17 +22,13 @@ services:
         value: 10000
 
   # Frontend (Static Site)
-  - type: web
+  - type: static
     name: salon-connect-web
-    env: static
-    buildCommand: npm run build --workspace=apps/web
+    buildCommand: npm install && npm run build --workspace=apps/web
     publishPath: ./apps/web/out
     envVars:
-      - key: API_URL
-        fromService:
-          type: web
-          name: salon-connect-api
-          property: host
+      - key: NEXT_PUBLIC_API_URL
+        value: https://salon-connect-api.onrender.com/api
       - key: NODE_ENV
         value: production
 
