@@ -6,8 +6,10 @@ const nextConfig = {
   },
   trailingSlash: true,
   output: 'export',
+  basePath: process.env.NODE_ENV === 'production' ? '/salon-connect' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/salon-connect/' : '',
   env: {
-    API_URL: process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'http://localhost:5000/api',
+    API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://salon-connect-api.onrender.com/api',
   },
 }
 
