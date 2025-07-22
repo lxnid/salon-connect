@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import Image from 'next/image'
 import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid'
 import { Card, CardContent } from './ui/Card'
@@ -84,13 +85,16 @@ export function SalonCard({ salon }: SalonCardProps) {
         </div>
         
         <div className="flex gap-2">
-          <Button variant="outline" className="flex-1">
+          <Button variant="outline" className="flex-1" disabled>
             View Details
           </Button>
-          <Button className="flex-1">
+          <Button className="flex-1" disabled>
             Book Now
           </Button>
         </div>
+        <p className="text-xs text-gray-500 mt-2 text-center">
+          Booking functionality coming soon!
+        </p>
       </CardContent>
     </Card>
   )

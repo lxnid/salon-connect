@@ -36,13 +36,33 @@ salon-connect/
 └── render.yaml         # Render deployment config
 ```
 
+## 🌐 Live Demo
+
+**🎉 SalonConnect is now live and functional!**
+
+- **Frontend**: [GitHub Pages URL] (deployed via GitHub Actions)
+- **API**: https://salon-connect-api.onrender.com/api
+- **Health Check**: https://salon-connect-api.onrender.com/health
+
+### ✨ Current Features:
+- ✅ **Dynamic Salon Search** - Fetches real data from deployed API
+- ✅ **Loading States** - Proper UX with loading indicators
+- ✅ **Error Handling** - Graceful fallbacks and retry options
+- ✅ **User Authentication** - Login/signup with JWT tokens
+- ✅ **Responsive Design** - Works on mobile and desktop
+- ✅ **Search Functionality** - Real-time search with API integration
+
+### 🧪 Test Accounts:
+- **Customer**: `customer@example.com` / `password123`
+- **Salon Owner**: `owner@example.com` / `password123`  
+- **Stylist**: `sarah@example.com` / `password123`
+
 ## Getting Started 🚀
 
 ### Prerequisites
 
 - Node.js 18+ 
-- Docker & Docker Compose
-- PostgreSQL (or use Docker)
+- PostgreSQL database (provided by Render)
 
 ### Development Setup
 
@@ -59,33 +79,12 @@ salon-connect/
    # Edit the .env file with your database URL and other secrets
    ```
 
-3. **Start with Docker** (recommended):
+3. **Start development servers**:
    ```bash
-   docker-compose up -d
-   ```
-
-   This will start:
-   - PostgreSQL database on port 5432
-   - API server on port 5000
-   - Next.js app on port 3000
-
-4. **Or start manually**:
-   ```bash
-   # Start database (if using Docker)
-   docker run -d --name salon-db -e POSTGRES_PASSWORD=password -p 5432:5432 postgres:15-alpine
-   
-   # Generate Prisma client and push schema
-   npm run db:generate
-   npm run db:push
-   
-   # Seed database with sample data
-   npm run db:seed --workspace=packages/database
-   
-   # Start development servers
    npm run dev
    ```
 
-5. **Access the application**:
+4. **Access the application**:
    - Frontend: http://localhost:3000
    - API: http://localhost:5000/api
    - Health check: http://localhost:5000/health

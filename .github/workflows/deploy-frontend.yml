@@ -37,7 +37,7 @@ jobs:
       - name: Build frontend
         run: |
           cd apps/web
-          npm run build
+          NODE_ENV=production npm run build
         env:
           NODE_ENV: production
           NEXT_PUBLIC_API_URL: https://salon-connect-api.onrender.com/api
