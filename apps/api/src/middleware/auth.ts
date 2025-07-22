@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
-import { prisma } from '@salon-connect/database'
+import { prisma } from '../lib/prisma'
 
 export interface AuthenticatedRequest extends Request {
   user?: {

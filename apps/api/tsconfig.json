@@ -14,11 +14,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["node"],
-    "paths": {
-      "@salon-connect/types": ["../../packages/types/src/*"],
-      "@salon-connect/database": ["../../packages/database/src/*"]
-    }
+    "types": ["node"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

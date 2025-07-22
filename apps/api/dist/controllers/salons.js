@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getSalonById = exports.getSalons = void 0;
-const database_1 = require("@salon-connect/database");
+const prisma_1 = require("../lib/prisma");
 // Calculate distance between two points using Haversine formula
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371; // Earth's radius in kilometers
@@ -48,7 +48,7 @@ const getSalons = async (req, res) => {
             };
         }
         // Fetch salons with related data
-        const salons = await database_1.prisma.salon.findMany({
+        const salons = await prisma_1.prisma.salon.findMany({
             where: whereClause,
             include: {
                 services: {
@@ -173,7 +173,7 @@ exports.getSalons = getSalons;
 const getSalonById = async (req, res) => {
     try {
         const { id } = req.params;
-        const salon = await database_1.prisma.salon.findUnique({
+        const salon = await prisma_1.prisma.salon.findUnique({
             where: { id, isActive: true },
             include: {
                 services: {

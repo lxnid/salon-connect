@@ -2,8 +2,8 @@ import { Request, Response } from 'express'
 import { validationResult } from 'express-validator'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { prisma } from '@salon-connect/database'
-import { LoginRequest, RegisterRequest, AuthResponse } from '@salon-connect/types'
+import { prisma } from '../lib/prisma'
+import { LoginRequest, RegisterRequest, AuthResponse } from '../types'
 
 const generateToken = (user: { id: string; email: string; role: string }) => {
   return jwt.sign(

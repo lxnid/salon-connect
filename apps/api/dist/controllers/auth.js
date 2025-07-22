@@ -7,7 +7,7 @@ exports.getProfile = exports.login = exports.register = void 0;
 const express_validator_1 = require("express-validator");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const database_1 = require("@salon-connect/database");
+const prisma_1 = require("../lib/prisma");
 const generateToken = (user) => {
     return jsonwebtoken_1.default.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 };
@@ -19,7 +19,7 @@ const register = async (req, res) => {
         }
         const { email, password, firstName, lastName, role, phone } = req.body;
         // Check if user already exists
-        const existingUser = await database_1.prisma.user.findUnique({
+        const existingUser = await prisma_1.prisma.user.findUnique({
             where: { email }
         });
         if (existingUser) {
@@ -28,7 +28,7 @@ const register = async (req, res) => {
         // Hash password
         const hashedPassword = await bcryptjs_1.default.hash(password, 12);
         // Create user
-        const user = await database_1.prisma.user.create({
+        const user = await prisma_1.prisma.user.create({
             data: {
                 email,
                 password: hashedPassword,
@@ -77,7 +77,7 @@ const login = async (req, res) => {
         }
         const { email, password } = req.body;
         // Find user
-        const user = await database_1.prisma.user.findUnique({
+        const user = await prisma_1.prisma.user.findUnique({
             where: { email },
             select: {
                 id: true,
@@ -122,7 +122,7 @@ const login = async (req, res) => {
 exports.login = login;
 const getProfile = async (req, res) => {
     try {
-        const user = await database_1.prisma.user.findUnique({
+        const user = await prisma_1.prisma.user.findUnique({
             where: { id: req.user.id },
             select: {
                 id: true,

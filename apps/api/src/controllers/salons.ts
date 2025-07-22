@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { prisma } from '@salon-connect/database'
-import { SalonSearchParams, SalonWithDetails } from '@salon-connect/types'
+import { prisma } from '../lib/prisma'
+import { SalonSearchParams, SalonWithDetails } from '../types'
 
 // Calculate distance between two points using Haversine formula
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
