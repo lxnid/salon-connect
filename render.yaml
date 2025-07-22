@@ -1,0 +1,58 @@
+# Render deployment configuration
+services:
+  # Database (PostgreSQL)
+  - type: pserv
+    name: salon-connect-db
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.db
+    dockerContext: .
+    envVars:
+      - key: POSTGRES_USER
+        value: salon_user
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: POSTGRES_DB
+        value: salon_connect
+
+  # API Server
+  - type: web
+    name: salon-connect-api
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: salon-connect-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+
+  # Frontend (Static Site)
+  - type: web
+    name: salon-connect-web
+    env: static
+    buildCommand: npm run build --workspace=apps/web
+    publishPath: ./apps/web/out
+    envVars:
+      - key: API_URL
+        fromService:
+          type: web
+          name: salon-connect-api
+          property: host
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: salon-connect-db
+    databaseName: salon_connect
+    user: salon_user
+    plan: free

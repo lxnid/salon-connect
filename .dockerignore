@@ -1,0 +1,16 @@
+node_modules
+npm-debug.log
+README.md
+.env
+.env.local
+.env.production.local
+.env.local
+.next
+.git
+.gitignore
+.DS_Store
+*.tgz
+*.tar.gz
+Dockerfile
+docker-compose.yml
+.dockerignore
