@@ -1,5 +1,7 @@
+'use client'
+
 import { HTMLAttributes, forwardRef } from 'react'
-import { clsx } from 'clsx'
+import clsx from 'clsx'
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'elevated'

@@ -26,75 +26,77 @@ interface SalonCardProps {
 }
 
 export function SalonCard({ salon }: SalonCardProps) {
-  const displayImage = salon.images[0] || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop'
-  const minPrice = Math.min(...salon.services.map(s => s.price))
-  
+  const imageUrl = salon.images?.[0] || '/placeholder.jpg'
+
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+      {/* Image */}
       <div className="relative h-48">
         <Image
-          src={displayImage}
-          alt={salon.name}
+          src={imageUrl}
+          alt={`${salon.name} image`}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
+          priority={false}
         />
-        {salon.distance && (
-          <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded-full text-sm font-medium">
-            {salon.distance} km
-          </div>
-        )}
       </div>
-      
+
       <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">
-            {salon.name}
-          </h3>
-          <div className="flex items-center text-yellow-500 ml-2">
-            <StarIcon className="h-4 w-4" />
-            <span className="ml-1 text-sm font-medium text-gray-900">
-              {salon.rating.toFixed(1)}
-            </span>
-            <span className="text-gray-500 text-sm ml-1">
-              ({salon.reviewCount})
-            </span>
-          </div>
-        </div>
-        
-        <div className="flex items-center text-gray-600 text-sm mb-2">
-          <MapPinIcon className="h-4 w-4 mr-1" />
-          <span className="line-clamp-1">{salon.address}, {salon.city}</span>
-        </div>
-        
-        {salon.description && (
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-            {salon.description}
-          </p>
-        )}
-        
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-sm text-gray-600">
-            Starting from <span className="font-semibold text-gray-900">${minPrice}</span>
-          </div>
-          {salon.nextAvailable && (
-            <div className="flex items-center text-green-600 text-sm">
-              <ClockIcon className="h-4 w-4 mr-1" />
-              <span>Next: Today 2:30 PM</span>
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">{salon.name}</h3>
+            {salon.description && (
+              <p className="mt-1 text-sm text-gray-600 line-clamp-2">{salon.description}</p>
+            )}
+
+            <div className="mt-2 flex items-center text-sm text-gray-600">
+              <MapPinIcon className="h-4 w-4 mr-1" />
+              <span>
+                {salon.address}, {salon.city}
+              </span>
             </div>
-          )}
+          </div>
+
+          <div className="text-right">
+            <div className="flex items-center justify-end">
+              <StarIcon className="h-5 w-5 text-yellow-500 mr-1" />
+              <span className="font-medium">{salon.rating.toFixed(1)}</span>
+            </div>
+            <p className="text-sm text-gray-600">{salon.reviewCount} reviews</p>
+          </div>
         </div>
-        
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex-1" disabled>
-            View Details
-          </Button>
-          <Button className="flex-1" disabled>
-            Book Now
-          </Button>
+
+        {/* Services */}
+        {salon.services?.length > 0 && (
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {salon.services.slice(0, 4).map((service, index) => (
+              <div key={index} className="text-sm text-gray-700">
+                <span className="truncate">{service.name}</span>
+                <span className="ml-2 text-gray-500">${service.price.toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Availability and actions */}
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center text-sm text-gray-600">
+            <ClockIcon className="h-4 w-4 mr-1" />
+            <span>
+              {salon.nextAvailable ? `Next available: ${salon.nextAvailable}` : 'Availability varies'}
+            </span>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Link href={`/salon/${salon.id}`}>
+              <Button size="sm">View Details</Button>
+            </Link>
+            <Button size="sm" variant="secondary" disabled>
+              Book Now
+            </Button>
+          </div>
         </div>
-        <p className="text-xs text-gray-500 mt-2 text-center">
-          Booking functionality coming soon!
-        </p>
       </CardContent>
     </Card>
   )

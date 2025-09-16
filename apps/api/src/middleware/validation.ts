@@ -10,9 +10,7 @@ export const validateRegister = [
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long'),
   
-  body('role')
-    .isIn(['CUSTOMER', 'SALON_OWNER', 'STYLIST'])
-    .withMessage('Role must be CUSTOMER, SALON_OWNER, or STYLIST'),
+  // role is assigned server-side; no need to validate input role for public signup
   
   body('firstName')
     .optional()

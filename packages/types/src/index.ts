@@ -19,7 +19,8 @@ export interface RegisterRequest {
   password: string
   firstName?: string
   lastName?: string
-  role: 'CUSTOMER' | 'SALON_OWNER' | 'STYLIST'
+  // Role is assigned server-side; clients should not send it
+  role?: 'CUSTOMER' | 'SALON_OWNER' | 'STYLIST'
   phone?: string
 }
 

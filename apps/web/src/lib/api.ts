@@ -1,6 +1,12 @@
 import axios from 'axios'
 
-const rawBase = process.env.NEXT_PUBLIC_API_URL || 'https://salon-connect-api.onrender.com/api'
+// Prefer explicit NEXT_PUBLIC_API_URL, otherwise use sane defaults
+const rawBase =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5002/api'
+    : 'https://salon-connect-api.onrender.com/api')
+
 // Normalize to ensure trailing /api is present
 const API_BASE_URL = /\/api\/?$/.test(rawBase) ? rawBase : `${rawBase.replace(/\/$/, '')}/api`
 

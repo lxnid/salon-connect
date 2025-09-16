@@ -1,43 +1,32 @@
+'use client'
+
 import { InputHTMLAttributes, forwardRef } from 'react'
-import { clsx } from 'clsx'
+import clsx from 'clsx'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
-  icon?: React.ReactNode
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, icon, type = 'text', ...props }, ref) => {
+  ({ className, label, error, ...props }, ref) => {
     return (
-      <div className="space-y-1">
+      <div className={clsx('w-full', className)}>
         {label && (
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             {label}
           </label>
         )}
-        <div className="relative">
-          {icon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <div className="h-5 w-5 text-gray-400">{icon}</div>
-            </div>
+        <input
+          ref={ref}
+          className={clsx(
+            'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500',
+            { 'border-red-500 focus:ring-red-500': !!error }
           )}
-          <input
-            type={type}
-            className={clsx(
-              'block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-black focus:outline-none focus:ring-1 focus:ring-black',
-              {
-                'pl-10': icon,
-                'border-red-500 focus:border-red-500 focus:ring-red-500': error,
-              },
-              className
-            )}
-            ref={ref}
-            {...props}
-          />
-        </div>
+          {...props}
+        />
         {error && (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="mt-1 text-sm text-red-600">{error}</p>
         )}
       </div>
     )

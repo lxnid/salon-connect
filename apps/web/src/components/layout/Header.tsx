@@ -116,15 +116,11 @@ export function Header() {
               </div>
             ) : (
               <>
-                <Link href="/auth/signin">
-                  <Button variant="ghost">
-                    Sign In
-                  </Button>
+                <Link href="/auth/signin" className="inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-transparent hover:bg-gray-100 focus:ring-gray-500 px-4 py-2 text-sm">
+                  Sign In
                 </Link>
-                <Link href="/auth/signup">
-                  <Button>
-                    Sign Up
-                  </Button>
+                <Link href="/auth/signup" className="inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-black text-white hover:bg-gray-800 focus:ring-gray-500 px-4 py-2 text-sm">
+                  Sign Up
                 </Link>
               </>
             )}

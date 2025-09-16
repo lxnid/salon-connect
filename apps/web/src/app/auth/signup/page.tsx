@@ -15,7 +15,6 @@ export default function SignUpPage() {
     password: '',
     firstName: '',
     lastName: '',
-    role: 'CUSTOMER' as 'CUSTOMER' | 'SALON_OWNER' | 'STYLIST',
     phone: ''
   })
   const [loading, setLoading] = useState(false)
@@ -60,52 +59,48 @@ export default function SignUpPage() {
               <div className="mb-4 p-3 rounded bg-red-50 text-red-700 text-sm">{error}</div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="First Name"
-                required
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                placeholder="Your first name"
-              />
+              <div className="grid grid-cols-1 gap-4">
+                <Input
+                  label="First Name"
+                  required
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  placeholder="Your first name"
+                />
 
-              <Input
-                label="Last Name"
-                required
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                placeholder="Your last name"
-              />
+                <Input
+                  label="Last Name"
+                  required
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  placeholder="Your last name"
+                />
 
-              <Input
-                label="Email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="you@example.com"
-              />
+                <Input
+                  label="Email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="you@example.com"
+                />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select
-                  className="w-full border rounded px-3 py-2"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                >
-                  <option value="CUSTOMER">Customer</option>
-                  <option value="SALON_OWNER">Salon Owner</option>
-                  <option value="STYLIST">Stylist</option>
-                </select>
+                <Input
+                  label="Phone (optional)"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+1 555-555-5555"
+                />
+
+                <Input
+                  label="Password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Choose a strong password"
+                />
               </div>
-
-              <Input
-                label="Password"
-                type="password"
-                required
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Choose a strong password"
-              />
 
               <Button type="submit" loading={loading} className="w-full">
                 Create Account

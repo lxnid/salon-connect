@@ -23,7 +23,10 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
       return res.status(400).json({ errors: errors.array() })
     }
 
-    const { email, password, firstName, lastName, role, phone } = req.body
+    const { email, password, firstName, lastName } = req.body
+
+    // Force default role assignment for public signup
+    const role: 'CUSTOMER' = 'CUSTOMER'
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
@@ -45,7 +48,7 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
         role: role as any,
         firstName,
         lastName,
-        phone
+        phone: (req.body as any)?.phone
       },
       select: {
         id: true,
