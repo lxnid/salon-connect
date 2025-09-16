@@ -19,4 +19,8 @@ npm run build --workspace=apps/api
 echo "🗄️ Running database migrations..."
 npx prisma migrate deploy --schema=./packages/database/prisma/schema.prisma
 
+# Seed the database (idempotent)
+echo "🌱 Seeding database..."
+npm run seed --workspace=apps/api
+
 echo "✅ Build completed successfully!"

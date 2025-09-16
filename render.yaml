@@ -8,7 +8,6 @@ services:
     runtime: node
     plan: free
     buildCommand: chmod +x build.sh && ./build.sh
-    preDeployCommand: npm run seed --workspace=apps/api
     startCommand: npm start --workspace=apps/api
     envVars:
       - key: DATABASE_URL
