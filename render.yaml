@@ -30,7 +30,6 @@ services:
   - type: web
     name: salon-connect-web
     runtime: static
-    plan: free
     buildCommand: npm install --include=dev && npm run build --workspace=apps/web
     staticPublishPath: apps/web/out
     envVars:
