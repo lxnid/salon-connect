@@ -4,6 +4,13 @@ import bcrypt from 'bcryptjs'
 async function main() {
   console.log('🌱 Starting database seed...')
 
+  // Check if data already exists
+  const existingUser = await prisma.user.findFirst()
+  if (existingUser) {
+    console.log('✅ Database already seeded, skipping...')
+    return
+  }
+
   // Create sample users
   const hashedPassword = await bcrypt.hash('password123', 12)
 

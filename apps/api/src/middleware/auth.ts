@@ -10,6 +10,8 @@ export interface AuthenticatedRequest extends Request {
   }
 }
 
+const DEMO_MODE = process.env.USE_DEMO_AUTH === 'true' || process.env.NODE_ENV !== 'production'
+
 export const authenticate = async (
   req: AuthenticatedRequest,
   res: Response,
@@ -22,13 +24,20 @@ export const authenticate = async (
       return res.status(401).json({ error: 'Access token required' })
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+    const secret = process.env.JWT_SECRET || 'dev-secret'
+    const decoded = jwt.verify(token, secret) as {
       id: string
       email: string
       role: string
     }
 
-    // Verify user still exists
+    // In demo mode, trust the decoded token and skip DB checks entirely
+    if (DEMO_MODE) {
+      req.user = decoded
+      return next()
+    }
+
+    // Verify user still exists (production)
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: { id: true, email: true, role: true }

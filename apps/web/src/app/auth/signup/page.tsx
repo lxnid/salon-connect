@@ -28,94 +28,73 @@ export default function SignUpPage() {
 
     try {
       const response = await authAPI.register(formData)
-      
-      // Store token
-      localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data.user))
-      
-      // Redirect to home
-      router.push('/')
+
+      const payload = (response as any)?.data?.data || (response as any)?.data || {}
+      const token = payload.token
+      const user = payload.user
+
+      if (token && user) {
+        localStorage.setItem('token', token)
+        localStorage.setItem('user', JSON.stringify(user))
+        router.push('/')
+      } else {
+        throw new Error('Unexpected response format from server')
+      }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Registration failed. Please try again.')
+      const apiError = err?.response?.data?.error || err?.message || 'Registration failed. Please try again.'
+      setError(apiError)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Logo */}
-        <div className="text-center">
-          <Link href="/" className="flex items-center justify-center">
-            <div className="bg-black text-white w-8 h-8 rounded flex items-center justify-center font-bold">
-              S
-            </div>
-            <span className="ml-2 text-xl font-semibold text-gray-900">
-              SalonConnect
-            </span>
-          </Link>
-        </div>
-
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-md mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Create your account</CardTitle>
+            <CardTitle>Create your account</CardTitle>
           </CardHeader>
           <CardContent>
+            {error && (
+              <div className="mb-4 p-3 rounded bg-red-50 text-red-700 text-sm">{error}</div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-600 text-sm">{error}</p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  label="First Name"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  placeholder="John"
-                />
-
-                <Input
-                  label="Last Name"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  placeholder="Doe"
-                />
-              </div>
+              <Input
+                label="First Name"
+                required
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                placeholder="Your first name"
+              />
 
               <Input
-                label="Email address"
+                label="Last Name"
+                required
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                placeholder="Your last name"
+              />
+
+              <Input
+                label="Email"
                 type="email"
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="john@example.com"
-              />
-
-              <Input
-                label="Phone (optional)"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+1 (555) 123-4567"
+                placeholder="you@example.com"
               />
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Account Type
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                 <select
+                  className="w-full border rounded px-3 py-2"
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                  className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                 >
-                  <option value="CUSTOMER">Customer - Book appointments</option>
-                  <option value="SALON_OWNER">Salon Owner - Manage salon</option>
-                  <option value="STYLIST">Stylist - Provide services</option>
+                  <option value="CUSTOMER">Customer</option>
+                  <option value="SALON_OWNER">Salon Owner</option>
+                  <option value="STYLIST">Stylist</option>
                 </select>
               </div>
 
@@ -128,11 +107,7 @@ export default function SignUpPage() {
                 placeholder="Choose a strong password"
               />
 
-              <Button 
-                type="submit" 
-                loading={loading} 
-                className="w-full"
-              >
+              <Button type="submit" loading={loading} className="w-full">
                 Create Account
               </Button>
             </form>

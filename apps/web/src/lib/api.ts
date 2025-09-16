@@ -1,89 +1,49 @@
 import axios from 'axios'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || 'https://salon-connect-api.onrender.com/api'
+const rawBase = process.env.NEXT_PUBLIC_API_URL || 'https://salon-connect-api.onrender.com/api'
+// Normalize to ensure trailing /api is present
+const API_BASE_URL = /\/api\/?$/.test(rawBase) ? rawBase : `${rawBase.replace(/\/$/, '')}/api`
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
+  withCredentials: true,
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 })
 
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
+// Add auth token from localStorage if present (client-side only)
+api.interceptors.request.use((config) => {
+  if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token')
     if (token) {
+      config.headers = config.headers || {}
       config.headers.Authorization = `Bearer ${token}`
     }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
   }
-)
+  return config
+})
 
-// Response interceptor for error handling
+// Handle common error cases
 api.interceptors.response.use(
-  (response) => {
-    return response
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem('token')
-      window.location.href = '/auth/signin'
+      // Optionally redirect to login on unauthorized
+      // window.location.href = '/auth/signin'
     }
     return Promise.reject(error)
   }
 )
 
-// Auth API functions
 export const authAPI = {
-  login: async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password })
-    return response.data
-  },
-  
-  register: async (userData: {
-    email: string
-    password: string
-    firstName?: string
-    lastName?: string
-    role: string
-    phone?: string
-  }) => {
-    const response = await api.post('/auth/register', userData)
-    return response.data
-  },
-  
-  getProfile: async () => {
-    const response = await api.get('/auth/profile')
-    return response.data
-  },
+  login: (email: string, password: string) =>
+    api.post('/auth/login', { email, password }),
+  signup: (data: any) => api.post('/auth/register', data),
+  profile: () => api.get('/auth/profile')
 }
 
-// Salon API functions
 export const salonAPI = {
-  searchSalons: async (params: {
-    query?: string
-    latitude?: number
-    longitude?: number
-    radius?: number
-    category?: string
-    minPrice?: number
-    maxPrice?: number
-    minRating?: number
-    sortBy?: string
-    page?: number
-    limit?: number
-  }) => {
-    const response = await api.get('/salons', { params })
-    return response.data
-  },
-  
-  getSalonById: async (id: string) => {
-    const response = await api.get(`/salons/${id}`)
-    return response.data
-  },
+  getSalons: (params?: any) => api.get('/salons', { params }),
+  getSalon: (id: string) => api.get(`/salons/${id}`)
 }

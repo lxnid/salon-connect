@@ -12,10 +12,15 @@ const PORT = process.env.PORT || 5000
 
 // Security middleware
 app.use(helmet())
+const allowedOrigins = (process.env.ALLOWED_ORIGINS ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://salon-connect-web.onrender.com'
+    : 'http://localhost:3000'
+  )
+).split(',').map(o => o.trim())
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-app.onrender.com'] 
-    : ['http://localhost:3000'],
+  origin: allowedOrigins,
   credentials: true
 }))
 

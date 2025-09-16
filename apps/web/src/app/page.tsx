@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { MagnifyingGlassIcon, MapPinIcon } from '@heroicons/react/24/outline'
-import { Header } from '@/components/layout/Header'
+// Removed Header import because it's now in RootLayout
 import { SalonCard } from '@/components/SalonCard'
 import { salonAPI } from '@/lib/api'
 
@@ -38,7 +38,8 @@ export default function HomePage() {
         query,
         limit: 10 
       })
-      setSalons(response.data.salons || [])
+      const salonsData = (response as any)?.data?.data?.salons ?? (response as any)?.data?.salons ?? []
+      setSalons(Array.isArray(salonsData) ? salonsData : [])
     } catch (err) {
       setError('Failed to load salons. Please try again.')
       console.error('Error fetching salons:', err)
@@ -76,7 +77,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      {/* Header removed; provided by RootLayout */}
 
       {/* Hero Section */}
       <div className="bg-white">

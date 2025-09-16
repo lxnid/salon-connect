@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { salonAPI } from '@/lib/api'
 import { SalonCard } from '@/components/SalonCard'
-import { Header } from '@/components/layout/Header'
+// Header removed; provided by RootLayout
 
 export default function TestPage() {
-  const [salons, setSalons] = useState([])
+  const [salons, setSalons] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -15,7 +15,8 @@ export default function TestPage() {
       try {
         setLoading(true)
         const response = await salonAPI.searchSalons({})
-        setSalons(response.data.salons)
+        const salonsData = (response as any)?.data?.data?.salons ?? (response as any)?.data?.salons ?? []
+        setSalons(Array.isArray(salonsData) ? salonsData : [])
       } catch (err) {
         setError('Failed to fetch salons')
         console.error('Error fetching salons:', err)
@@ -29,7 +30,7 @@ export default function TestPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      {/* Header removed; provided by RootLayout */}
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">

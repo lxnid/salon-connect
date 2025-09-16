@@ -5,9 +5,10 @@ services:
   # API Server
   - type: web
     name: salon-connect-api
-    env: node
+    runtime: node
     plan: free
     buildCommand: chmod +x build.sh && ./build.sh
+    preDeployCommand: npm run seed --workspace=apps/api
     startCommand: npm start --workspace=apps/api
     envVars:
       - key: DATABASE_URL
@@ -20,6 +21,25 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: ALLOWED_ORIGINS
+        fromService:
+          name: salon-connect-web
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+
+  # Static Frontend (Next.js export)
+  - type: web
+    name: salon-connect-web
+    runtime: static
+    plan: free
+    buildCommand: npm install --include=dev && npm run build --workspace=apps/web
+    staticPublishPath: apps/web/out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: salon-connect-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
 
 databases:
   - name: salon-connect-db

@@ -19,7 +19,7 @@
     "type-check": "npm run type-check --workspace=apps/web && npm run type-check --workspace=apps/api"
   },
   "keywords": ["salon", "beauty", "booking", "social", "platform"],
-  "author": "Your Name",
+  "author": "lxnid",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2",
