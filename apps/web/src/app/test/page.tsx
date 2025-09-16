@@ -14,7 +14,7 @@ export default function TestPage() {
     const fetchSalons = async () => {
       try {
         setLoading(true)
-        const response = await salonAPI.searchSalons({})
+        const response = await salonAPI.getSalons({})
         const salonsData = (response as any)?.data?.data?.salons ?? (response as any)?.data?.salons ?? []
         setSalons(Array.isArray(salonsData) ? salonsData : [])
       } catch (err) {

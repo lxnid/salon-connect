@@ -27,7 +27,7 @@ export default function SignUpPage() {
     setError('')
 
     try {
-      const response = await authAPI.register(formData)
+      const response = await authAPI.signup(formData)
 
       const payload = (response as any)?.data?.data || (response as any)?.data || {}
       const token = payload.token

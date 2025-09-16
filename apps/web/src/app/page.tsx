@@ -34,7 +34,7 @@ export default function HomePage() {
     try {
       setLoading(true)
       setError('')
-      const response = await salonAPI.searchSalons({ 
+      const response = await salonAPI.getSalons({ 
         query,
         limit: 10 
       })
