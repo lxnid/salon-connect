@@ -257,7 +257,7 @@ export const getSalonById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
-    const salon = await prisma.salon.findUnique({
+    const salon = await prisma.salon.findFirst({
       where: { id, isActive: true },
       include: {
         services: {
