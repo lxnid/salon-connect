@@ -190,7 +190,7 @@ export default function HomePage() {
             ))}
           </div>
         ) : salons.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-x-6">
             {salons.map((salon) => (
               <SalonCard key={salon.id} salon={salon} />
             ))}

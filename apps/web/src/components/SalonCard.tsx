@@ -55,7 +55,7 @@ export function SalonCard({ salon }: SalonCardProps) {
 
   return (
     <Card
-      className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+      className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer break-inside-avoid mb-6"
       onClick={() => router.push(`/salon/${salon.id}`)}
       role="link"
       aria-label={`View details for ${salon.name}`}

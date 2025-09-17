@@ -15,7 +15,7 @@ app.use(helmet())
 const allowedOrigins = (process.env.ALLOWED_ORIGINS ||
   (process.env.NODE_ENV === 'production'
     ? 'https://salon-connect-web.onrender.com'
-    : 'http://localhost:3000'
+    : 'http://localhost:3000,http://localhost:3001'
   )
 ).split(',').map(o => o.trim())
 

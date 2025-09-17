@@ -499,12 +499,430 @@ async function main() {
     }
   })
 
+  // 4) Chic Nails Lounge (Brooklyn, NY)
+  const salonOwner4 = await prisma.user.create({
+    data: {
+      email: 'owner4@example.com',
+      password: hashedPassword,
+      role: UserRole.SALON_OWNER,
+      firstName: 'Lily',
+      lastName: 'Nguyen',
+      phone: '+1 (555) 888-1111',
+    },
+  })
+  const stylistUser7 = await prisma.user.create({
+    data: {
+      email: 'mia@example.com',
+      password: hashedPassword,
+      role: UserRole.STYLIST,
+      firstName: 'Mia',
+      lastName: 'Diaz',
+      phone: '+1 (555) 888-2222',
+    },
+  })
+  const stylistUser8 = await prisma.user.create({
+    data: {
+      email: 'zoe@example.com',
+      password: hashedPassword,
+      role: UserRole.STYLIST,
+      firstName: 'Zoe',
+      lastName: 'Kim',
+      phone: '+1 (555) 888-3333',
+    },
+  })
+
+  const salon4 = await prisma.salon.create({
+    data: {
+      name: 'Chic Nails Lounge',
+      description: 'Trend-forward nail lounge for manicures, pedicures, and nail art.',
+      address: '101 Bedford Ave',
+      city: 'Brooklyn',
+      state: 'New York',
+      zipCode: '11211',
+      latitude: 40.7170,
+      longitude: -73.9560,
+      phone: '+1 (555) 444-1111',
+      email: 'contact@chicnailslounge.com',
+      images: [
+        'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800',
+        'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=800',
+      ],
+      ownerId: salonOwner4.id,
+    },
+  })
+
+  const stylist7 = await prisma.stylist.create({
+    data: {
+      userId: stylistUser7.id,
+      salonId: salon4.id,
+      bio: 'Nail artist specializing in gel extensions and minimalist art.',
+      experience: 4,
+      specialties: ['Manicure', 'Gel Extensions', 'Nail Art'],
+    },
+  })
+  const stylist8 = await prisma.stylist.create({
+    data: {
+      userId: stylistUser8.id,
+      salonId: salon4.id,
+      bio: 'Pedicure pro focused on precision and care.',
+      experience: 6,
+      specialties: ['Pedicure', 'Spa Pedicure', 'French Manicure'],
+    },
+  })
+
+  const services4 = await Promise.all([
+    prisma.service.create({
+      data: {
+        name: 'Classic Manicure',
+        description: 'Shaping, cuticle care, and polish',
+        category: ServiceCategory.MANICURE,
+        duration: 40,
+        price: 28,
+        salonId: salon4.id,
+      },
+    }),
+    prisma.service.create({
+      data: {
+        name: 'Spa Pedicure',
+        description: 'Exfoliating scrub, mask, and massage',
+        category: ServiceCategory.PEDICURE,
+        duration: 55,
+        price: 45,
+        salonId: salon4.id,
+      },
+    }),
+    prisma.service.create({
+      data: {
+        name: 'Gel Extensions',
+        description: 'Gel overlay with extensions and design options',
+        category: ServiceCategory.MANICURE,
+        duration: 75,
+        price: 70,
+        salonId: salon4.id,
+      },
+    }),
+  ])
+
+  await Promise.all([
+    ...services4.map(s => prisma.stylistService.create({ data: { stylistId: stylist7.id, serviceId: s.id } })),
+    ...services4.map(s => prisma.stylistService.create({ data: { stylistId: stylist8.id, serviceId: s.id } })),
+  ])
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) => prisma.stylistSchedule.create({
+      data: { dayOfWeek: i + 1, startTime: '10:00', endTime: '18:00', isAvailable: true, stylistId: stylist7.id }
+    }))
+  )
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) => prisma.stylistSchedule.create({
+      data: { dayOfWeek: i + 1, startTime: '11:00', endTime: '19:00', isAvailable: true, stylistId: stylist8.id }
+    }))
+  )
+
+  const booking4 = await prisma.booking.create({
+    data: {
+      datetime: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+      totalPrice: services4[0].price,
+      customerId: customer.id,
+      salonId: salon4.id,
+      stylistId: stylist7.id,
+    }
+  })
+  await prisma.bookingService.create({ data: { bookingId: booking4.id, serviceId: services4[0].id } })
+  await prisma.review.create({
+    data: {
+      rating: 5,
+      comment: 'Beautiful manicure and friendly staff!',
+      customerId: customer.id,
+      salonId: salon4.id,
+      bookingId: booking4.id,
+    }
+  })
+
+  // 5) Fresh Curls Studio (Queens, NY)
+  const salonOwner5 = await prisma.user.create({
+    data: {
+      email: 'owner5@example.com',
+      password: hashedPassword,
+      role: UserRole.SALON_OWNER,
+      firstName: 'Nina',
+      lastName: 'Patel',
+      phone: '+1 (555) 999-0000',
+    },
+  })
+  const stylistUser9 = await prisma.user.create({
+    data: {
+      email: 'ivy@example.com',
+      password: hashedPassword,
+      role: UserRole.STYLIST,
+      firstName: 'Ivy',
+      lastName: 'Brooks',
+      phone: '+1 (555) 999-1111',
+    },
+  })
+  const stylistUser10 = await prisma.user.create({
+    data: {
+      email: 'noah@example.com',
+      password: hashedPassword,
+      role: UserRole.STYLIST,
+      firstName: 'Noah',
+      lastName: 'Reed',
+      phone: '+1 (555) 999-2222',
+    },
+  })
+
+  const salon5 = await prisma.salon.create({
+    data: {
+      name: 'Fresh Curls Studio',
+      description: 'Specialists in curly cuts, hydration treatments, and silk press styling.',
+      address: '22 41st Ave',
+      city: 'Queens',
+      state: 'New York',
+      zipCode: '11101',
+      latitude: 40.7506,
+      longitude: -73.9407,
+      phone: '+1 (555) 555-0101',
+      email: 'hello@freshcurlsstudio.com',
+      images: [
+        'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800',
+        'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800',
+      ],
+      ownerId: salonOwner5.id,
+    },
+  })
+
+  const stylist9 = await prisma.stylist.create({
+    data: {
+      userId: stylistUser9.id,
+      salonId: salon5.id,
+      bio: 'Curl specialist focused on shape, health, and definition.',
+      experience: 7,
+      specialties: ['Haircut', 'Curly Hair', 'Hair Treatment'],
+    },
+  })
+  const stylist10 = await prisma.stylist.create({
+    data: {
+      userId: stylistUser10.id,
+      salonId: salon5.id,
+      bio: 'Stylist experienced with silk press and hydration treatments.',
+      experience: 5,
+      specialties: ['Silk Press', 'Hydration', 'Styling'],
+    },
+  })
+
+  const services5 = await Promise.all([
+    prisma.service.create({
+      data: {
+        name: 'Curl Cut',
+        description: 'Dry curl-by-curl cut for optimal shape',
+        category: ServiceCategory.HAIRCUT,
+        duration: 60,
+        price: 85,
+        salonId: salon5.id,
+      },
+    }),
+    prisma.service.create({
+      data: {
+        name: 'Hydration Treatment',
+        description: 'Deep conditioning and steam hydration',
+        category: ServiceCategory.TREATMENT,
+        duration: 45,
+        price: 55,
+        salonId: salon5.id,
+      },
+    }),
+    prisma.service.create({
+      data: {
+        name: 'Silk Press',
+        description: 'Silkening treatment and pressed finish',
+        category: ServiceCategory.STYLING,
+        duration: 60,
+        price: 95,
+        salonId: salon5.id,
+      },
+    }),
+  ])
+
+  await Promise.all([
+    ...services5.map(s => prisma.stylistService.create({ data: { stylistId: stylist9.id, serviceId: s.id } })),
+    ...services5.map(s => prisma.stylistService.create({ data: { stylistId: stylist10.id, serviceId: s.id } })),
+  ])
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) => prisma.stylistSchedule.create({
+      data: { dayOfWeek: i + 1, startTime: '10:00', endTime: '19:00', isAvailable: true, stylistId: stylist9.id }
+    }))
+  )
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) => prisma.stylistSchedule.create({
+      data: { dayOfWeek: i + 1, startTime: '12:00', endTime: '20:00', isAvailable: true, stylistId: stylist10.id }
+    }))
+  )
+
+  const booking5 = await prisma.booking.create({
+    data: {
+      datetime: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000),
+      totalPrice: services5[0].price,
+      customerId: customer.id,
+      salonId: salon5.id,
+      stylistId: stylist9.id,
+    }
+  })
+  await prisma.bookingService.create({ data: { bookingId: booking5.id, serviceId: services5[0].id } })
+  await prisma.review.create({
+    data: {
+      rating: 5,
+      comment: 'My curls have never looked better!',
+      customerId: customer.id,
+      salonId: salon5.id,
+      bookingId: booking5.id,
+    }
+  })
+
+  // 6) The Brow & Lash Bar (Manhattan, NY)
+  const salonOwner6 = await prisma.user.create({
+    data: {
+      email: 'owner6@example.com',
+      password: hashedPassword,
+      role: UserRole.SALON_OWNER,
+      firstName: 'Riley',
+      lastName: 'Morgan',
+      phone: '+1 (555) 123-7890',
+    },
+  })
+  const stylistUser11 = await prisma.user.create({
+    data: {
+      email: 'brianna@example.com',
+      password: hashedPassword,
+      role: UserRole.STYLIST,
+      firstName: 'Brianna',
+      lastName: 'Gray',
+      phone: '+1 (555) 123-4561',
+    },
+  })
+  const stylistUser12 = await prisma.user.create({
+    data: {
+      email: 'luna@example.com',
+      password: hashedPassword,
+      role: UserRole.STYLIST,
+      firstName: 'Luna',
+      lastName: 'Park',
+      phone: '+1 (555) 123-4562',
+    },
+  })
+
+  const salon6 = await prisma.salon.create({
+    data: {
+      name: 'The Brow & Lash Bar',
+      description: 'Expert brow shaping, lamination, and lash extensions.',
+      address: '12 W 23rd St',
+      city: 'Manhattan',
+      state: 'New York',
+      zipCode: '10010',
+      latitude: 40.7420,
+      longitude: -73.9920,
+      phone: '+1 (555) 777-2222',
+      email: 'book@browandlashbar.com',
+      images: [
+        'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800',
+        'https://images.unsplash.com/photo-1573497499518-0a9c84d5f0b4?w=800',
+      ],
+      ownerId: salonOwner6.id,
+    },
+  })
+
+  const stylist11 = await prisma.stylist.create({
+    data: {
+      userId: stylistUser11.id,
+      salonId: salon6.id,
+      bio: 'Brow specialist for precise shaping and lamination.',
+      experience: 6,
+      specialties: ['Brows', 'Lamination', 'Waxing'],
+    },
+  })
+  const stylist12 = await prisma.stylist.create({
+    data: {
+      userId: stylistUser12.id,
+      salonId: salon6.id,
+      bio: 'Lash artist focusing on classic and volume sets.',
+      experience: 4,
+      specialties: ['Lashes', 'Extensions', 'Refill'],
+    },
+  })
+
+  const services6 = await Promise.all([
+    prisma.service.create({
+      data: {
+        name: 'Brow Shaping',
+        description: 'Wax, tweeze, and trim for a tailored brow',
+        category: ServiceCategory.TREATMENT,
+        duration: 25,
+        price: 25,
+        salonId: salon6.id,
+      },
+    }),
+    prisma.service.create({
+      data: {
+        name: 'Lash Extensions',
+        description: 'Full application of classic or volume lash extensions',
+        category: ServiceCategory.TREATMENT,
+        duration: 120,
+        price: 160,
+        salonId: salon6.id,
+      },
+    }),
+    prisma.service.create({
+      data: {
+        name: 'Brow Lamination',
+        description: 'Brow lamination and tint for a fuller look',
+        category: ServiceCategory.TREATMENT,
+        duration: 50,
+        price: 80,
+        salonId: salon6.id,
+      },
+    }),
+  ])
+
+  await Promise.all([
+    ...services6.map(s => prisma.stylistService.create({ data: { stylistId: stylist11.id, serviceId: s.id } })),
+    ...services6.map(s => prisma.stylistService.create({ data: { stylistId: stylist12.id, serviceId: s.id } })),
+  ])
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) => prisma.stylistSchedule.create({
+      data: { dayOfWeek: i + 1, startTime: '10:00', endTime: '18:00', isAvailable: true, stylistId: stylist11.id }
+    }))
+  )
+  await Promise.all(
+    Array.from({ length: 5 }, (_, i) => prisma.stylistSchedule.create({
+      data: { dayOfWeek: i + 1, startTime: '11:00', endTime: '19:00', isAvailable: true, stylistId: stylist12.id }
+    }))
+  )
+
+  const booking6 = await prisma.booking.create({
+    data: {
+      datetime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      totalPrice: services6[0].price,
+      customerId: customer.id,
+      salonId: salon6.id,
+      stylistId: stylist11.id,
+    }
+  })
+  await prisma.bookingService.create({ data: { bookingId: booking6.id, serviceId: services6[0].id } })
+  await prisma.review.create({
+    data: {
+      rating: 4,
+      comment: 'Perfect brow shape, will come again!',
+      customerId: customer.id,
+      salonId: salon6.id,
+      bookingId: booking6.id,
+    }
+  })
+
   console.log('✅ Database seeded successfully!')
   console.log('📧 Test accounts created:')
   console.log('   Customer: customer@example.com / password123')
-  console.log('   Salon Owners: owner@example.com, owner2@example.com, owner3@example.com / password123')
-  console.log('   Stylists: sarah@example.com, mike@example.com, emily@example.com, jake@example.com, anna@example.com, luis@example.com / password123')
+  console.log('   Salon Owners: owner@example.com, owner2@example.com, owner3@example.com, owner4@example.com, owner5@example.com, owner6@example.com / password123')
+  console.log('   Stylists: sarah@example.com, mike@example.com, emily@example.com, jake@example.com, anna@example.com, luis@example.com, mia@example.com, zoe@example.com, ivy@example.com, noah@example.com, brianna@example.com, luna@example.com / password123')
 }
+
 
 main()
   .then(async () => {
