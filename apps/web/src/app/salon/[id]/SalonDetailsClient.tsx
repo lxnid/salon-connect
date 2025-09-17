@@ -319,8 +319,31 @@ export default function SalonDetailsClient({ id }: { id: string }) {
                   </div>
                 </div>
                 {/* Map placeholder */}
-                <div className="mt-4 h-40 bg-gray-200 rounded-md flex items-center justify-center text-gray-600 text-sm">
-                  Map preview coming soon
+                <div className="mt-4 h-40 rounded-md overflow-hidden">
+                  {(() => {
+                    const hasCoords = typeof salon?.latitude === 'number' && typeof salon?.longitude === 'number'
+                    const q = hasCoords
+                      ? `${salon?.latitude},${salon?.longitude}`
+                      : [salon?.address, salon?.city, salon?.state].filter(Boolean).join(', ')
+                    if (!q) {
+                      return (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-600 text-sm">
+                          Location unavailable
+                        </div>
+                      )
+                    }
+                    const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(q)}&output=embed`
+                    return (
+                      <iframe
+                        title="Google Maps"
+                        src={mapSrc}
+                        className="w-full h-full border-0"
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        allowFullScreen
+                      />
+                    )
+                  })()}
                 </div>
               </CardContent>
             </Card>

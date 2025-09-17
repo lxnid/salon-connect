@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid'
 import { Card, CardContent } from './ui/Card'
 import { Button } from './ui/Button'
@@ -26,18 +27,48 @@ interface SalonCardProps {
 }
 
 export function SalonCard({ salon }: SalonCardProps) {
+  const router = useRouter()
   const imageUrl = salon.images?.[0] || '/placeholder.jpg'
 
+  const prices = Array.isArray(salon.services) && salon.services.length > 0
+    ? salon.services.map((s) => s.price).filter((p) => typeof p === 'number')
+    : []
+  const minPrice = prices.length ? Math.min(...prices) : undefined
+  const maxPrice = prices.length ? Math.max(...prices) : undefined
+
+  const next = salon.nextAvailable ? new Date(salon.nextAvailable) : null
+  const now = new Date()
+  const isSameDay = next &&
+    next.getFullYear() === now.getFullYear() &&
+    next.getMonth() === now.getMonth() &&
+    next.getDate() === now.getDate()
+
+  const nextSlotText = next
+    ? next.toLocaleString(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      })
+    : 'Check details'
+
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card
+      className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+      onClick={() => router.push(`/salon/${salon.id}`)}
+      role="link"
+      aria-label={`View details for ${salon.name}`}
+    >
       {/* Image */}
       <div className="relative h-48">
         <Image
           src={imageUrl}
-          alt={`${salon.name} image`}
+          alt={`${salon.name} image`
+}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover"
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           priority={false}
         />
       </div>
@@ -67,34 +98,39 @@ export function SalonCard({ salon }: SalonCardProps) {
           </div>
         </div>
 
-        {/* Services */}
-        {salon.services?.length > 0 && (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            {salon.services.slice(0, 4).map((service, index) => (
-              <div key={index} className="text-sm text-gray-700">
-                <span className="truncate">{service.name}</span>
-                <span className="ml-2 text-gray-500">${service.price.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Availability and actions */}
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex items-center text-sm text-gray-600">
-            <ClockIcon className="h-4 w-4 mr-1" />
-            <span>
-              {salon.nextAvailable ? `Next available: ${salon.nextAvailable}` : 'Availability varies'}
+        {/* Availability status (compact) */}
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex items-center text-sm">
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isSameDay ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'}`}>
+              <ClockIcon className="h-3.5 w-3.5 mr-1" />
+              {isSameDay ? 'Available today' : 'See availability'}
             </span>
           </div>
 
           <div className="flex items-center space-x-2">
-            <Link href={`/salon/${salon.id}`}>
+            <Link href={`/salon/${salon.id}`} onClick={(e) => e.stopPropagation()}>
               <Button size="sm">View Details</Button>
             </Link>
-            <Button size="sm" variant="secondary" disabled>
-              Book Now
-            </Button>
+          </div>
+        </div>
+
+        {/* Hover-reveal: pricing summary + next slot */}
+        <div className="transition-all duration-300 overflow-hidden max-h-0 group-hover:max-h-40">
+          <div className="mt-3 p-3 rounded-lg border bg-gray-50">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-500">Price range</p>
+                <p className="text-sm text-gray-800 mt-0.5">
+                  {minPrice !== undefined && maxPrice !== undefined
+                    ? `$${minPrice.toFixed(0)} - $${maxPrice.toFixed(0)}`
+                    : 'See services'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-gray-500">Next slot</p>
+                <p className="text-sm text-gray-800 mt-0.5">{nextSlotText}</p>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>
