@@ -12,8 +12,8 @@ const nextConfig = {
     // Point to local API default port (apps/api uses 5002 by default in this workspace)
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002/api',
   },
-  // Ensure local workspace packages with TS sources are transpiled correctly
-  transpilePackages: ['@salon-connect/types'],
+  // Enable React strict mode in dev for better error surfaces
+  reactStrictMode: true,
 }
 
 module.exports = nextConfig

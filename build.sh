@@ -15,9 +15,9 @@ npx prisma generate --schema=./packages/database/prisma/schema.prisma
 echo "🏗️ Building API..."
 npm run build --workspace=apps/api
 
-# Run database migrations in production
-echo "🗄️ Running database migrations..."
-npx prisma migrate deploy --schema=./packages/database/prisma/schema.prisma
+# Sync database schema (no migrations tracked)
+echo "🗄️ Pushing database schema..."
+npx prisma db push --schema=./packages/database/prisma/schema.prisma
 
 # Seed the database (idempotent)
 echo "🌱 Seeding database..."

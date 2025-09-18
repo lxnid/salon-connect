@@ -47,10 +47,12 @@ app.get('/health', (req, res) => {
 // Import routes
 import authRoutes from './routes/auth'
 import salonRoutes from './routes/salons'
+import bookingRoutes from './routes/bookings'
 
 // API routes
 app.use('/api/auth', authRoutes)
 app.use('/api/salons', salonRoutes)
+app.use('/api/bookings', bookingRoutes)
 
 app.get('/api', (req, res) => {
   res.json({

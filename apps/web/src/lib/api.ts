@@ -53,3 +53,10 @@ export const salonAPI = {
   getSalons: (params?: any) => api.get('/salons', { params }),
   getSalon: (id: string) => api.get(`/salons/${id}`)
 }
+
+export const bookingAPI = {
+  create: (payload: { salonId: string; stylistId: string; serviceIds: string[]; datetime: string; notes?: string }) =>
+    api.post('/bookings', payload),
+  getMine: () => api.get('/bookings/me'),
+  getById: (id: string) => api.get(`/bookings/${id}`)
+}

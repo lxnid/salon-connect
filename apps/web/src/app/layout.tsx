@@ -1,6 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-// import { Header } from '@/components/layout/Header'
+import { SiteHeader } from '../components/layout/SiteHeader'
 
 export const metadata: Metadata = {
   title: 'SalonConnect - Find Your Perfect Salon',
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {/* <Header /> */}
+        <SiteHeader />
         {children}
       </body>
     </html>

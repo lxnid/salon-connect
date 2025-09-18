@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
-import { salonAPI } from '@/lib/api'
+import { salonAPI, bookingAPI } from '@/lib/api'
 
 interface Service {
   id: string
@@ -52,6 +52,7 @@ export default function BookingWizardPage() {
   const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([])
   const [selectedStylistId, setSelectedStylistId] = useState<string>('')
   const [datetime, setDatetime] = useState<string>('')
+  const [notes, setNotes] = useState<string>('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
@@ -96,10 +97,28 @@ export default function BookingWizardPage() {
 
   const onConfirm = async () => {
     setSubmitting(true)
+    setError('')
     try {
-      // Placeholder submit; backend integration to be implemented
-      await new Promise(res => setTimeout(res, 600))
-      setSubmitted(true)
+      if (!salon) throw new Error('Salon not loaded')
+      const payload = {
+        salonId: salon.id,
+        stylistId: selectedStylistId,
+        serviceIds: selectedServiceIds,
+        datetime,
+        notes: notes || undefined
+      }
+      const res = await bookingAPI.create(payload)
+      const data = (res as any)?.data?.data ?? (res as any)?.data
+      if (data?.id) {
+        setSubmitted(true)
+        // Optionally redirect to bookings detail or list
+        // router.push(`/bookings/${data.id}`)
+      } else {
+        throw new Error('Unexpected response from server')
+      }
+    } catch (e: any) {
+      const apiError = e?.response?.data?.error || e?.message || 'Failed to create booking.'
+      setError(apiError)
     } finally {
       setSubmitting(false)
     }
@@ -153,7 +172,7 @@ export default function BookingWizardPage() {
                             <div className="font-medium text-gray-900">{svc.name}</div>
                             <div className="text-sm text-gray-600">{svc.duration} min</div>
                           </div>
-                          <div className="text-gray-900 font-medium">${'{'}svc.price.toFixed(2){'}'}</div>
+                          <div className="text-gray-900 font-medium">${svc.price.toFixed(2)}</div>
                         </label>
                       ))}
                     </div>
@@ -234,7 +253,7 @@ export default function BookingWizardPage() {
                         {selectedServiceIds.map(id => {
                           const svc = salon.services.find(s => s.id === id)
                           if (!svc) return null
-                          return <li key={id}>{svc.name} — ${'{'}svc.price.toFixed(2){'}'}</li>
+                          return <li key={id}>{svc.name} — ${svc.price.toFixed(2)}</li>
                         })}
                       </ul>
                     </div>
@@ -247,38 +266,42 @@ export default function BookingWizardPage() {
                       })()}
                     </div>
                     <div className="text-gray-700"><span className="font-medium">Date & time:</span> {datetime ? new Date(datetime).toLocaleString() : ''}</div>
-                    <div className="text-gray-900 font-semibold">Total: ${'{'}totalPrice.toFixed(2){'}'}</div>
+                    <div className="text-gray-900 font-semibold">Total: ${totalPrice.toFixed(2)}</div>
+
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+                      <textarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        rows={3}
+                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                        placeholder="Any preferences or notes for your stylist"
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Navigation */}
+            {/* Nav / Actions */}
             <div className="flex items-center justify-between">
-              <Button
-                variant="secondary"
-                onClick={() => setStep(prev => (prev > 1 ? ((prev - 1) as Step) : prev))}
-                disabled={step === 1 || submitting}
-              >
+              <Button variant="ghost" onClick={() => setStep((prev) => (prev > 1 ? ((prev - 1) as Step) : prev))}>
                 Back
               </Button>
               {step < 4 ? (
-                <Button
-                  onClick={() => setStep(prev => (prev < 4 ? ((prev + 1) as Step) : prev))}
-                  disabled={!canProceed}
-                >
-                  Next
+                <Button disabled={!canProceed} onClick={() => setStep((prev) => ((prev + 1) as Step))}>
+                  Continue
                 </Button>
               ) : (
-                <Button onClick={onConfirm} loading={submitting}>
+                <Button onClick={onConfirm} loading={submitting} disabled={!canProceed || submitting}>
                   Confirm Booking
                 </Button>
               )}
             </div>
 
             {submitted && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
-                Booking data captured. Submission to backend will be wired up next.
+              <div className="p-4 rounded-md bg-green-50 border border-green-200 text-green-800">
+                Booking created successfully!
               </div>
             )}
           </div>
