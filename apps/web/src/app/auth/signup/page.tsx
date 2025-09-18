@@ -26,11 +26,20 @@ export default function SignUpPage() {
     setError('')
 
     try {
-      const response = await authAPI.signup(formData)
+      // Trim and sanitize optional fields to avoid failing validators with empty strings
+      const payload = {
+        email: formData.email.trim(),
+        password: formData.password,
+        firstName: formData.firstName.trim() || undefined,
+        lastName: formData.lastName.trim() || undefined,
+        phone: formData.phone.trim() || undefined
+      }
 
-      const payload = (response as any)?.data?.data || (response as any)?.data || {}
-      const token = payload.token
-      const user = payload.user
+      const response = await authAPI.signup(payload)
+
+      const data = (response as any)?.data?.data || (response as any)?.data || {}
+      const token = data.token
+      const user = data.user
 
       if (token && user) {
         localStorage.setItem('token', token)
@@ -40,7 +49,9 @@ export default function SignUpPage() {
         throw new Error('Unexpected response format from server')
       }
     } catch (err: any) {
-      const apiError = err?.response?.data?.error || err?.message || 'Registration failed. Please try again.'
+      // Prefer first validation error message if available
+      const validationMessage = err?.response?.data?.errors?.[0]?.msg
+      const apiError = validationMessage || err?.response?.data?.error || err?.message || 'Registration failed. Please try again.'
       setError(apiError)
     } finally {
       setLoading(false)

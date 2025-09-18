@@ -43,22 +43,39 @@ export default function HomePage() {
     } catch (err) {
       setError('Failed to load salons. Please try again.')
       console.error('Error fetching salons:', err)
-      // Fallback to mock data if API fails
+      // Fallback to demo data if API fails (ids must match pre-generated static params)
       setSalons([
         {
-          id: '1',
+          id: 'demo-1',
           name: 'Elite Hair Studio (Demo)',
-          description: 'Professional hair studio - API connecting...',
+          description: 'Professional hair studio - API connecting...'
+,
           address: '123 Main Street',
           city: 'Downtown',
           images: ['https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800'],
           rating: 4.8,
           reviewCount: 124,
           services: [
-            { id: '1', name: "Women's Haircut", price: 65 },
-            { id: '2', name: "Men's Haircut", price: 35 },
+            { id: 's1', name: "Women's Haircut", price: 65 },
+            { id: 's2', name: "Men's Haircut", price: 35 },
           ],
-          nextAvailable: '2025-01-25T14:30:00Z'
+          nextAvailable: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+          id: 'demo-2',
+          name: 'Urban Barber (Demo)',
+          description: 'Modern barbershop - API connecting...'
+,
+          address: '456 Market Ave',
+          city: 'Uptown',
+          images: ['https://images.unsplash.com/photo-1556228724-4a3aa6458a27?w=800'],
+          rating: 4.5,
+          reviewCount: 89,
+          services: [
+            { id: 's3', name: 'Beard Trim', price: 20 },
+            { id: 's4', name: 'Fade Cut', price: 40 },
+          ],
+          nextAvailable: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString()
         }
       ])
     } finally {
