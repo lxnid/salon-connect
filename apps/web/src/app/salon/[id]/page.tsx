@@ -1,6 +1,11 @@
 import type { Metadata } from 'next'
 import SalonDetailsClient from './SalonDetailsClient'
 
+// In static export, only the params returned here will be generated.
+// Setting dynamicParams to false ensures any other param is treated as 404 (no fallback),
+// which is required for `output: 'export'`.
+export const dynamicParams = false
+
 export async function generateStaticParams() {
   try {
     const rawBase =
@@ -10,7 +15,8 @@ export async function generateStaticParams() {
         : 'https://salon-connect-api.onrender.com/api')
 
     const apiBase = /\/api\/?$/.test(rawBase) ? rawBase : `${rawBase.replace(/\/$/, '')}/api`
-    const res = await fetch(`${apiBase}/salons?limit=30`, { next: { revalidate: 0 } })
+    // Use default caching at build time; avoid no-store which can force dynamic behavior
+    const res = await fetch(`${apiBase}/salons?limit=30`)
     if (!res.ok) return []
     const json = await res.json()
     const salons = json?.data?.salons ?? json?.salons ?? []
@@ -19,6 +25,7 @@ export async function generateStaticParams() {
       .filter((s: any) => typeof s?.id === 'string')
       .map((s: any) => ({ id: s.id }))
   } catch {
+    // If API is unreachable during CI, return no paths; with dynamicParams=false this is OK
     return []
   }
 }
