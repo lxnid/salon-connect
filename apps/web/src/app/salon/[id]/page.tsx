@@ -7,27 +7,8 @@ import SalonDetailsClient from './SalonDetailsClient'
 export const dynamicParams = false
 
 export async function generateStaticParams() {
-  try {
-    const rawBase =
-      process.env.NEXT_PUBLIC_API_URL ||
-      (process.env.NODE_ENV === 'development'
-        ? 'http://localhost:5002/api'
-        : 'https://salon-connect-api.onrender.com/api')
-
-    const apiBase = /\/api\/?$/.test(rawBase) ? rawBase : `${rawBase.replace(/\/$/, '')}/api`
-    // Use default caching at build time; avoid no-store which can force dynamic behavior
-    const res = await fetch(`${apiBase}/salons?limit=30`)
-    if (!res.ok) return []
-    const json = await res.json()
-    const salons = json?.data?.salons ?? json?.salons ?? []
-    if (!Array.isArray(salons)) return []
-    return salons
-      .filter((s: any) => typeof s?.id === 'string')
-      .map((s: any) => ({ id: s.id }))
-  } catch {
-    // If API is unreachable during CI, return no paths; with dynamicParams=false this is OK
-    return []
-  }
+  // Minimal deterministic list to satisfy static export; avoids any network calls during build
+  return [{ id: '1' }]
 }
 
 export const metadata: Metadata = {

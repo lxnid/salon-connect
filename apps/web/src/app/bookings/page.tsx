@@ -1,11 +1,13 @@
-'use client'
+"use client"
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { salonAPI, bookingAPI } from '@/lib/api'
+
+export const dynamic = 'force-static'
 
 interface Service {
   id: string
@@ -39,7 +41,7 @@ interface SalonDetails {
 
 type Step = 1 | 2 | 3 | 4
 
-export default function BookingWizardPage() {
+function BookingWizardInner() {
   const router = useRouter()
   const params = useSearchParams()
   const salonId = params.get('salonId') || ''
@@ -111,7 +113,6 @@ export default function BookingWizardPage() {
       const data = (res as any)?.data?.data ?? (res as any)?.data
       if (data?.id) {
         setSubmitted(true)
-        // Optionally redirect to bookings detail or list
         // router.push(`/bookings/${data.id}`)
       } else {
         throw new Error('Unexpected response from server')
@@ -141,7 +142,6 @@ export default function BookingWizardPage() {
 
         {!loading && !error && salon && (
           <div className="space-y-6">
-            {/* Progress */}
             <div className="flex items-center justify-between text-sm">
               {[1,2,3,4].map((s) => (
                 <div key={s} className={`flex-1 flex items-center ${s < 4 ? 'pr-2' : ''}`}>
@@ -151,7 +151,6 @@ export default function BookingWizardPage() {
               ))}
             </div>
 
-            {/* Step content */}
             {step === 1 && (
               <Card>
                 <CardHeader>
@@ -248,65 +247,51 @@ export default function BookingWizardPage() {
                   <div className="space-y-3">
                     <div className="text-gray-700"><span className="font-medium">Salon:</span> {salon.name}</div>
                     <div className="text-gray-700">
-                      <div className="font-medium">Services:</div>
-                      <ul className="list-disc ml-5 text-gray-700">
-                        {selectedServiceIds.map(id => {
-                          const svc = salon.services.find(s => s.id === id)
-                          if (!svc) return null
-                          return <li key={id}>{svc.name} — ${svc.price.toFixed(2)}</li>
-                        })}
-                      </ul>
+                      <span className="font-medium">Services:</span> {selectedServiceIds.length ? selectedServiceIds.length : 'None'}
                     </div>
-                    <div className="text-gray-700">
-                      <span className="font-medium">Stylist:</span>{' '}
-                      {(() => {
-                        const sty = salon.stylists.find(s => s.id === selectedStylistId)
-                        const name = [sty?.user?.firstName, sty?.user?.lastName].filter(Boolean).join(' ') || 'Stylist'
-                        return name
-                      })()}
-                    </div>
-                    <div className="text-gray-700"><span className="font-medium">Date & time:</span> {datetime ? new Date(datetime).toLocaleString() : ''}</div>
+                    <div className="text-gray-700"><span className="font-medium">Stylist:</span> {salon.stylists.find(s => s.id === selectedStylistId)?.user?.firstName || '—'}</div>
+                    <div className="text-gray-700"><span className="font-medium">Date & time:</span> {datetime || '—'}</div>
                     <div className="text-gray-900 font-semibold">Total: ${totalPrice.toFixed(2)}</div>
-
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
-                      <textarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        rows={3}
-                        className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
-                        placeholder="Any preferences or notes for your stylist"
-                      />
+                  </div>
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <div className="flex gap-2">
+                      {step > 1 && (
+                        <Button variant="secondary" onClick={() => setStep((prev) => (Math.max(1, (prev - 1)) as Step))}>
+                          Back
+                        </Button>
+                      )}
+                      {step < 4 && (
+                        <Button disabled={!canProceed} onClick={() => setStep((prev) => (Math.min(4, (prev + 1)) as Step))}>
+                          Continue
+                        </Button>
+                      )}
                     </div>
+                    {step === 4 && (
+                      <Button disabled={!canProceed || submitting} onClick={onConfirm}>
+                        {submitting ? 'Submitting...' : 'Confirm booking'}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
             )}
+          </div>
+        )}
 
-            {/* Nav / Actions */}
-            <div className="flex items-center justify-between">
-              <Button variant="ghost" onClick={() => setStep((prev) => (prev > 1 ? ((prev - 1) as Step) : prev))}>
-                Back
-              </Button>
-              {step < 4 ? (
-                <Button disabled={!canProceed} onClick={() => setStep((prev) => ((prev + 1) as Step))}>
-                  Continue
-                </Button>
-              ) : (
-                <Button onClick={onConfirm} loading={submitting} disabled={!canProceed || submitting}>
-                  Confirm Booking
-                </Button>
-              )}
-            </div>
-
-            {submitted && (
-              <div className="p-4 rounded-md bg-green-50 border border-green-200 text-green-800">
-                Booking created successfully!
-              </div>
-            )}
+        {submitted && (
+          <div className="mt-6 p-4 rounded-md border border-green-200 bg-green-50 text-green-800">
+            Your booking has been created!
           </div>
         )}
       </div>
     </div>
+  )
+}
+
+export default function BookingWizardPage() {
+  return (
+    <Suspense fallback={<div className="p-4 text-gray-600">Loading booking wizard...</div>}>
+      <BookingWizardInner />
+    </Suspense>
   )
 }
